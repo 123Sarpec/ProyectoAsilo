@@ -98,7 +98,7 @@ export default function Pacientes() {
                   <Td>
                     <div className="flex gap-2">
                       <button className="px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">
-                        Ver
+                        Agregar
                       </button>
                       <button className="px-2 py-1 rounded bg-amber-500 text-white hover:bg-amber-600">
                         Editar

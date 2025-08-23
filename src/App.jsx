@@ -1,17 +1,34 @@
 // src/App.jsx
 import { useState } from "react";
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
-import Pacientes from "./components/pacientes";
+import Pacientes from "./components/pacientes"; // <- ya consume tu API
 import "./App.css";
 
-function App() {
+export default function App() {
+  return <AppShell />;
+}
+
+function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  // Menú del dashboard (agrega o quita lo que quieras)
   const items = [
     { name: "Inicio", to: "/" },
     { name: "Pacientes", to: "/pacientes" },
+    { name: "Residentes", to: "/residentes" },
+    { name: "Inventario", to: "/inventario" },
     { name: "Reportes", to: "/reportes" },
+    // Si quieres más módulos, solo agrégalos aquí y abajo su <Route>
+    { name: "Catálogo", to: "/catalogo" },
+    { name: "Planes", to: "/planes" },
+    // { name: "Ronda", to: "/ronda" },
+    // { name: "Historial", to: "/historial" },
+    // { name: "PRN", to: "/prn" },
+    // { name: "Notificaciones", to: "/notificaciones" },
+    // { name: "Auditoría", to: "/auditoria" },
+    // { name: "UX Turno", to: "/ux-turno" },
   ];
-  const location = useLocation();
 
   const linkBase = "block px-3 py-2 rounded transition-colors select-none";
   const linkIdle = "text-gray-700 hover:bg-gray-100";
@@ -58,9 +75,7 @@ function App() {
                 key={item.to}
                 to={item.to}
                 onClick={() => setSidebarOpen(false)}
-                className={`${linkBase} ${
-                  isActive ? linkActive : linkIdle
-                } w-full text-left`}
+                className={`${linkBase} ${isActive ? linkActive : linkIdle} w-full text-left`}
                 aria-current={isActive ? "page" : undefined}
               >
                 {item.name}
@@ -92,6 +107,7 @@ function App() {
           <h1 className="text-2xl font-bold text-gray-900 text-center">
             Dashboard Asilo
           </h1>
+
           <div className="bg-gray-600 w-11 h-10 rounded-full" />
         </header>
 
@@ -99,8 +115,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="/pacientes" element={<Pacientes />} />
+            <Route path="/residentes" element={<Residentes />} />
+            <Route path="/inventario" element={<Inventario />} />
             <Route path="/reportes" element={<Reportes />} />
-            {/* fallback simple */}
+            {/* Si agregas más items arriba, crea aquí su ruta */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </section>
@@ -109,16 +127,62 @@ function App() {
   );
 }
 
+/* ====== VISTAS DEL DASHBOARD (placeholders, conecta tu API luego) ====== */
+
 function Inicio() {
-  return <div>Contenido de Inicio</div>;
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold">Resumen general</h2>
+        <p className="text-gray-700">Vista rápida del estado del día.</p>
+      </div>
+
+      {/* KPIs (estáticos por ahora; luego reemplaza con datos de tu API) */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiCard title="Residentes" value="—" subtitle="Activos" />
+        <KpiCard title="Medicamentos hoy" value="—" subtitle="Programados" />
+        <KpiCard title="Pendientes" value="—" subtitle="Próximo horario" />
+        <KpiCard title="Omisiones" value="—" subtitle="Últimas 24h" />
+      </div>
+
+      {/* Accesos rápidos */}
+      <div className="bg-white rounded shadow p-4">
+        <h3 className="font-semibold mb-3">Accesos rápidos</h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <QuickButton to="/pacientes" label="Ver pacientes" />
+          <QuickButton to="/reportes" label="Ver reportes" />
+          <QuickButton to="/residentes" label="Gestionar residentes" />
+          <QuickButton to="/inventario" label="Inventario" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Residentes() {
+  return (
+    <Modulo
+      titulo="Residentes"
+      desc="Aquí conectarás tu API para listar/crear/editar/inactivar residentes."
+    />
+  );
+}
+
+function Inventario() {
+  return (
+    <Modulo
+      titulo="Inventario"
+      desc="Conecta tu API para entradas (donaciones), salidas automáticas y kardex."
+    />
+  );
 }
 
 function Reportes() {
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Reportes</h2>
-      <div className="bg-white p-4 rounded shadow">KPIs ejemplo…</div>
-    </div>
+    <Modulo
+      titulo="Reportes"
+      desc="Integra tus endpoints para MAR, omisiones, consumo, stock y caducidades."
+    />
   );
 }
 
@@ -126,4 +190,41 @@ function NotFound() {
   return <div className="text-gray-600">Ruta no encontrada.</div>;
 }
 
-export default App;
+/* ====== UI Helpers ====== */
+
+function KpiCard({ title, value, subtitle }) {
+  return (
+    <div className="bg-white rounded shadow p-4">
+      <div className="text-sm text-gray-500">{title}</div>
+      <div className="text-3xl font-bold">{value}</div>
+      <div className="text-sm text-gray-500">{subtitle}</div>
+    </div>
+  );
+}
+
+function QuickButton({ to, label }) {
+  return (
+    <NavLink
+      to={to}
+      className="w-full text-center px-3 py-2 rounded border hover:bg-gray-50"
+    >
+      {label}
+    </NavLink>
+  );
+}
+
+function Modulo({ titulo, desc }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold">{titulo}</h2>
+      <div className="bg-white p-4 rounded shadow">
+        <p className="text-gray-700">{desc}</p>
+        {/* EJEMPLO para cuando conectes API:
+           useEffect(() => {
+             fetch('/api/tu-endpoint').then(r => r.json()).then(setData);
+           }, []);
+        */}
+      </div>
+    </div>
+  );
+}
